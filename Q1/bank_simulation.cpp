@@ -429,9 +429,7 @@ public:
 };
 
 int main() {
-    freopen("input.txt","r",stdin);
     freopen("output.txt","w",stdout);
-    freopen("error.txt","w",stderr);
     // Simulation parameters
     double arrivalRate = 40.0;   // customers per hour
     double serviceTime = 4.0;    // minutes per customer

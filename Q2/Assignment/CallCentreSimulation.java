@@ -1,11 +1,11 @@
 import java.util.Random;
 import java.util.PriorityQueue;
 
-
+//enum to define type 
 enum EventType {
     ARRIVAL, DEPARTURE
 }
-
+// it compares 2 event based on time
 class Event implements Comparable<Event> {
     double time;
     EventType type; // ARRIVAL or "departure"
@@ -25,7 +25,7 @@ class Event implements Comparable<Event> {
 
 
 
-
+// generateSimulation gives a random variable based on exponential distribution 
 public class CallCentreSimulation {
     public static double generateExponential(double lambda) {
         Random random = new Random();
@@ -37,7 +37,7 @@ public class CallCentreSimulation {
     static double mu = 1/150.0;
     static int capacity;
     static double simulationPeriod = 8*60*60*5; 
-    static PriorityQueue<Event> eventQueue = new PriorityQueue<>();
+    static PriorityQueue<Event> eventQueue = new PriorityQueue<>(); // PriorityQueue based on arrival time to stimulate customer waiting in the queue 
 
     static double currTime = 0;
     static double lastEventTime = 0;
@@ -50,7 +50,7 @@ public class CallCentreSimulation {
     static double timeQueueFull = 0;
     static double timeQueueEmpty = 0;
     static double numCustomersArrived = 0;
-    static double numCustomersRejected = 0;
+    static double numCustomersRejected = 0; // no of customer rejected fur to buffer getting full
 
     public static void main(String[] args) {
         
@@ -93,10 +93,10 @@ public class CallCentreSimulation {
 
         totalTimeInSystem += numInSystem * (currTime - lastEventTime);
 
-        if (numInSystem == capacity) {
+        if (numInSystem == capacity) { // system is full
             isSystemFull = true;
             timeQueueFull += currTime - lastEventTime;
-            numCustomersRejected++;
+            numCustomersRejected++;   // so new packet is rejected
             eventQueue.add(new Event(currTime + generateExponential(lambda), EventType.ARRIVAL));
             return;
         }
@@ -116,7 +116,7 @@ public class CallCentreSimulation {
         totalTimeInSystem += numInSystem * (currTime - lastEventTime);
 
         if (numInSystem == capacity) {
-            isSystemFull = false;
+            isSystemFull = false; // since deperature is happenning , now it system will again become not full 
             timeQueueFull += currTime - lastEventTime;
         }
         numInSystem--;

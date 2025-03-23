@@ -1,0 +1,41 @@
+======================================================
+              BANK SIMULATION RESULTS                 
+======================================================
+
+Period: Morning (9:00 AM - 11:00 AM)
+Number of Tellers: 2
+Customers Served: 68
+a. Average Waiting Time: 13.43 minutes
+b. Average Time in System: 16.90 minutes
+c. Teller Utilization Rate: 95.64%
+d. Average Queue Length: 7.61 customers
+e. Probability of All Tellers Busy: 93.37%
+
+Period: Peak (11:00 AM - 2:00 PM)
+Number of Tellers: 4
+Customers Served: 124
+a. Average Waiting Time: 3.10 minutes
+b. Average Time in System: 7.39 minutes
+c. Teller Utilization Rate: 72.25%
+d. Average Queue Length: 2.14 customers
+e. Probability of All Tellers Busy: 48.34%
+
+Period: Afternoon (2:00 PM - 5:00 PM)
+Number of Tellers: 3
+Customers Served: 109
+a. Average Waiting Time: 9.90 minutes
+b. Average Time in System: 14.41 minutes
+c. Teller Utilization Rate: 91.41%
+d. Average Queue Length: 6.00 customers
+e. Probability of All Tellers Busy: 82.55%
+
+======================================================
+              ENTIRE DAY SUMMARY                      
+======================================================
+Period: Entire Day (9:00 AM - 5:00 PM)
+Total Customers Served: 301
+a. Average Waiting Time: 7.90 minutes
+b. Average Time in System: 12.08 minutes
+c. Overall Teller Utilization Rate: 82.89%
+d. Average Queue Length: 4.95 customers
+e. Probability of All Tellers Busy: 72.43%
