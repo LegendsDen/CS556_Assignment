@@ -8,6 +8,7 @@ enum EventType {
     ARRIVAL, DEPARTURE, CUSTOMER_LEAVING
 }
 
+// Event class to store the time, type of event and customer ID
 class Event implements Comparable<Event> {
     double time;
     EventType type; // ARRIVAL or "departure"
@@ -27,24 +28,27 @@ class Event implements Comparable<Event> {
 }
 
 
-
+// CoffeShopSimulation class to simulate the coffee shop
 public class CoffeShopSimulation {
+    // Generates a random number from an exponential distribution
     public static double generateExponential(double lambda) {
         Random random = new Random();
         double u = random.nextDouble(); // Generates a random number in [0,1)
         return -Math.log(1 - u) / lambda;   
     }
 
+    // Simulation Parameters
     static double lambda = 1/360.0;
     static double mu = 1/240.0;
     static double simulationCapacity = 500; 
-    static PriorityQueue<Event> eventQueue = new PriorityQueue<>();
-    static Queue<Integer> customersInQueue = new LinkedList<>();
+    static PriorityQueue<Event> eventQueue = new PriorityQueue<>(); // Pueue of arrival, departures etc
+    static Queue<Integer> customersInQueue = new LinkedList<>(); // Queue of customers waiting
     static int numofBaristas = 1;
     static int maxWaitingTime = 5*60;
     static boolean doCustomersLeave = true;
     static int lossDuetoLeaving = 5;
 
+    // Metrics variables
     static double currTime = 0;
     static double lastEventTime = 0;
     static double numInSystem = 0;
@@ -61,6 +65,8 @@ public class CoffeShopSimulation {
 
     public static void main(String[] args) {
         
+        // Get parameters from command line
+        lambda = args.length > 0 ? Integer.parseInt(args[0])/3600.0 : 1/360.0;
         mu = args.length > 0 ? Integer.parseInt(args[0])/3600.0 : 1/240.0;
         numofBaristas = args.length > 1 ? Integer.parseInt(args[1]) : 1;
         doCustomersLeave = args.length > 2 ? Boolean.parseBoolean(args[2]) : false;
@@ -68,6 +74,7 @@ public class CoffeShopSimulation {
 
         eventQueue.add(new Event(generateExponential(lambda), EventType.ARRIVAL,0));
 
+        // Keep processing events until 50-0 customers have arrived
         while (!eventQueue.isEmpty()) {
             Event event = eventQueue.poll();
             if ((event.type == EventType.ARRIVAL)&&(numCustomersArrived < simulationCapacity)) {
@@ -88,6 +95,7 @@ public class CoffeShopSimulation {
             }
         }
 
+        // Print the metrics
         System.out.println("Average Waiting Time: "+totalWaitingTime/(numCustomersArrived) + " seconds");
         System.out.println("Average Time in System: "+totalTimeInSystem/(numCustomersArrived) + " seconds");
         System.out.println("Utilization Rate of Barista: "+(1-(timeBaristaFree/currTime)));
@@ -101,9 +109,11 @@ public class CoffeShopSimulation {
 
     }
 
+    // Event Handlers
     public static void handleArrival(int customerID) {
-        numCustomersArrived++;
+        numCustomersArrived++;  
 
+        // Updating Metrics
         if(numInSystem == 0){
             timeBaristaFree += currTime - lastEventTime;
         }
@@ -122,12 +132,14 @@ public class CoffeShopSimulation {
             peakTime = currTime;
         }
         maximumQueueLength = Math.max(maximumQueueLength, numInSystem);
+        // Next Arrival is scheduled
         eventQueue.add(new Event(currTime + generateExponential(lambda), EventType.ARRIVAL, (int) Math.floor(numCustomersArrived)));
         if (numInSystem <= numofBaristas) {
+            // Customer is served immediately
             eventQueue.add(new Event(currTime + generateExponential(mu), EventType.DEPARTURE,customerID));
         }
         else{
-
+            // Addend to queue, waiting timer of 5 min starts
             if(doCustomersLeave){
                 eventQueue.add(new Event(currTime + maxWaitingTime, EventType.CUSTOMER_LEAVING, customerID));
             }
@@ -138,6 +150,7 @@ public class CoffeShopSimulation {
 
     public static void handleDeparture(int customerID) {
         
+        // Updating Metrics
         if(numInSystem > numofBaristas){
             totalWaitingTime += (numInSystem-numofBaristas) * (currTime - lastEventTime);
         }
@@ -149,6 +162,7 @@ public class CoffeShopSimulation {
         numInSystem--;
         // System.out.println("Customer Served: "+ customerID + " Time: "+currTime);
         if (numInSystem >= numofBaristas) {
+            // Serve the next customer is available in queue
             int newCustomerID = customersInQueue.poll();
             removeCustomer(newCustomerID);
             eventQueue.add(new Event(currTime + generateExponential(mu), EventType.DEPARTURE, newCustomerID));
@@ -157,6 +171,9 @@ public class CoffeShopSimulation {
     }
 
     public static void handleCustomerLeaving(int customerID) {
+        // Is customer waiting time > 5 min
+
+        // Updating Metrics
         numCustomersAbandoned++;
         if(numInSystem > numofBaristas){
             totalWaitingTime += (numInSystem-numofBaristas) * (currTime - lastEventTime);
@@ -172,6 +189,7 @@ public class CoffeShopSimulation {
         removeCustomer(customerID);
     }
 
+    // Remove Customer from queue and event queue
     public static void removeCustomer(int customerID){
         customersInQueue.remove(customerID);
         eventQueue.removeIf(event -> event.customerID == customerID);
