@@ -200,4 +200,118 @@ How to Run the Simulation
 
 
 
+Coffee Shop Queue Simulation (M/M/1 Model)
+
+Overview
+
+This project simulates a small coffee shop with one barista serving customers in a First-Come, First-Served (FCFS) queue. Customers arrive randomly based on a Poisson process, and the barista serves them at an exponentially distributed rate.
+The simulation runs until 500 customers have been served, and key performance metrics are calculated.
+Problem Statement
+
+A coffee shop operates with one barista and follows an M/M/1 queue model:
+
+    Customers arrive at an average rate of λ = 10 customers per hour (Poisson distribution).
+
+    Service time follows an exponential distribution with μ = 15 customers per hour.
+
+    Customers must wait in line if the barista is busy.
+
+    If the waiting time exceeds a certain threshold (5 minutes), some customers leave (reneging).
+
+    The coffee shop operates until 500 customers have been processed.
+
+Goals
+
+    Simulate the coffee shop for 500 customers.
+
+    Compute key performance metrics:
+
+        Average waiting time before ordering.
+
+        Average time spent in the shop (waiting + service time).
+
+        Utilization factor of the barista.
+
+        Idle time of the barista.
+
+        Maximum queue length.
+
+        Probability of an empty queue.
+
+        Customer abandonment probability.
+
+        Revenue loss due to long wait times.
+
+    Analyze system behavior during peak hours.
+
+    Experiment with different service rates (faster/slower barista).
+
+    Simulate hiring a second barista and compare results.
+
+    Determine revenue impact when customers leave due to long wait times.
+
+Features Implemented
+
+✅ Event-driven simulation using a priority queue for arrivals and departures.
+✅ First-Come, First-Served (FCFS) queue management.
+✅ Support for customer abandonment (reneging) when waiting time exceeds 5 minutes.
+✅ Performance metrics calculation, including:
+
+    Average waiting time before ordering.
+
+    Total time spent in the coffee shop.
+
+    Utilization of the barista.
+
+    Barista idle time.
+
+    Probability of an empty queue.
+
+    Customer loss and revenue impact due to long waits.
+    ✅ Dynamic parameter configuration (e.g., change service rate, add a second barista).
+    ✅ Peak hour detection (time of max queue length).
+    ✅ Multiple barista simulation (M/M/c model).
+
+Code Structure
+1. Classes & Data Structures
+
+    Event – Represents a customer arrival, departure, or abandonment event.
+
+    EventType – Enum for ARRIVAL, DEPARTURE, CUSTOMER_LEAVING.
+
+    PriorityQueue<Event> – Manages simulation events sorted by time.
+
+    Queue<Integer> (LinkedList) – Represents the customer queue.
+
+2. Simulation Parameters
+
+    lambda (arrival rate) = 10 customers/hour = 1 customer every 6 minutes.
+
+    mu (service rate) = 15 customers/hour = 1 customer every 4 minutes.
+
+    simulationCapacity = 500 customers.
+
+    maxWaitingTime = 5 minutes (customer leaves if exceeded).
+
+    lossDuetoLeaving = $5 per abandoned customer.
+
+3. Core Functions
+
+    generateExponential(lambda) – Generates a random exponential arrival/service time.
+
+    handleArrival(int customerID) – Processes customer arrivals, queues them if necessary.
+
+    handleDeparture(int customerID) – Processes customer departures, freeing up the barista.
+
+    handleCustomerLeaving(int customerID) – Handles customers who abandon the queue after 5 minutes.
+
+    removeCustomer(int customerID) – Cleans up abandoned customers from queue & event list.
+
+    runSimulation() – Runs the event-driven simulation until 500 customers are processed.
+
+    displayResults() – Computes and prints performance metrics.
+
+
+How to Run the Simulation
+
 
