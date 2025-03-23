@@ -84,6 +84,13 @@ How to Run the Simulation
     2.To plot results (Python) -- place the generated "queue_data.txt" and "waiting_time.txt" in same directory
                 python plot_results.py
 
+    Or   using Makefile
+    1. To Compile  -->make 
+    2. To run  and stimulate --> make run 
+    3. TO see plots --> make plot
+    4. To clean  --> make clean 
+
+
 
 
 

@@ -64,7 +64,7 @@ private:
     
     // State variables
     vector<Teller> tellers;
-    queue<Customer> queue;
+    queue<Customer> queuet;
     vector<Customer> completedCustomers;
     
     double currentTime;
@@ -114,9 +114,9 @@ public:
                 // If we need more tellers, add them
                 while (tellers.size() < requiredTellers) {
                     tellers.push_back(Teller());
-                    if(queue.size()>0){
-                        Customer cust=queue.front();
-                        queue.pop();
+                    if(queuet.size()>0){
+                        Customer cust=queuet.front();
+                        queuet.pop();
                         tellers[tellers.size()-1].busy=true;
                         if(periodIndex==1)cust.serviceStartTime=120;
                         if(periodIndex==2) cust.serviceStartTime=300;
@@ -156,7 +156,7 @@ public:
     void processArrival() {
         // Create a new customer
         Customer customer(currentTime);
-        queue.push(customer);
+        queuet.push(customer);
         
         // Find available teller
         bool foundTeller = false;
@@ -166,8 +166,8 @@ public:
                 tellers[i].busy = true;
                 
                 // Set service start time
-                customer = queue.front();
-                queue.pop();
+                customer = queuet.front();
+                queuet.pop();
 
                 customer.serviceStartTime = currentTime;
                 
@@ -195,9 +195,9 @@ public:
         }
         
         if (!foundTeller) {
-            // All tellers are busy, add customer to queue
+            // All tellers are busy, add customer to queuet
             
-            // Update max queue length for current period
+            // Update max queuet length for current period
             int periodIndex = getCurrentPeriodIndex();
             if (periodIndex >= 0) {
                 // Check if all tellers are busy for statistics
@@ -233,10 +233,10 @@ public:
                 // Teller becomes available
                 tellers[i].busy = false;
                 
-                // If there are customers in the queue, assign one to this teller
-                if (!queue.empty()) {
-                    Customer customer = queue.front();
-                    queue.pop();
+                // If there are customers in the queuet, assign one to this teller
+                if (!queuet.empty()) {
+                    Customer customer = queuet.front();
+                    queuet.pop();
                     
                     // Update customer times
                     customer.serviceStartTime = currentTime;
@@ -294,7 +294,7 @@ public:
         }
     }
     void runSimulation() {
-		ofstream queueData("queue_data.txt"); // File to store queue length over time
+		ofstream queuetData("queuet_data.txt"); // File to store queuet length over time
 		ofstream waitingTimeData("waiting_time.txt"); 
         // Initialize tellers for the first period
         tellers.resize(periodMetrics[0].numTellers);
@@ -310,8 +310,8 @@ public:
             
             // Update the current time
             currentTime = nextEventTime;
-             // Log queue length at each time step
-    		queueData << currentTime << " " << queue.size() << endl;
+             // Log queuet length at each time step
+    		queuetData << currentTime << " " << queuet.size() << endl;
             // Update teller utilization metrics
             updateTellerMetrics(oldTime, currentTime);
 			
@@ -333,7 +333,7 @@ public:
 			waitingTimeData << period.startTime << " " << period.totalWaitingTime / max(1, period.customersServed) << endl;
 		}
 
-		queueData.close();
+		queuetData.close();
 		waitingTimeData.close();
     }
     
@@ -370,7 +370,7 @@ public:
             
             double utilizationRate = period.totalBusyTime / totalTellerTime;
             
-            double avgQueueLength = period.totalWaitingTime/(period.endTime-period.startTime);
+            double avgqueuetLength = period.totalWaitingTime/(period.endTime-period.startTime);
             
             // Probability of all tellers being busy
             double probAllBusy = 
@@ -379,7 +379,7 @@ public:
             cout << "a. Average Waiting Time: " << avgWaitingTime << " minutes\n";
             cout << "b. Average Time in System: " << avgSystemTime << " minutes\n";
             cout << "c. Teller Utilization Rate: " << utilizationRate * 100 << "%\n";
-            cout << "d. Average Queue Length: " << avgQueueLength << " customers\n";
+            cout << "d. Average queuet Length: " << avgqueuetLength << " customers\n";
             cout << "e. Probability of All Tellers Busy: " << probAllBusy * 100 << "%\n\n";
             
             // Add to whole day metrics
@@ -414,7 +414,7 @@ public:
         
         double utilizationRate = wholeDayMetrics.totalBusyTime / totalTellerTime;
         
-        double avgQueueLength =wholeDayMetrics.totalWaitingTime/480;
+        double avgqueuetLength =wholeDayMetrics.totalWaitingTime/480;
         
         // Probability of all tellers being busy across the day
         double probAllBusy = 
@@ -423,7 +423,7 @@ public:
         cout << "a. Average Waiting Time: " << avgWaitingTime << " minutes\n";
         cout << "b. Average Time in System: " << avgSystemTime << " minutes\n";
         cout << "c. Overall Teller Utilization Rate: " << utilizationRate * 100 << "%\n";
-        cout << "d. Average Queue Length: " << avgQueueLength << " customers\n";
+        cout << "d. Average queuet Length: " << avgqueuetLength << " customers\n";
         cout << "e. Probability of All Tellers Busy: " << probAllBusy * 100 << "%\n";
     }
 };
