@@ -6,28 +6,26 @@ JAVA = java
 PYTHON = python
 
 # Java file and class
-JAVA_SRC = CoffeShopSimulation.java
-JAVA_CLASS = CoffeShopSimulation
+JAVA_SRC = CallCentreSimulation.java
+JAVA_CLASS = CallCentreSimulation
 
 # Python simulation runner
 PYTHON_SCRIPT = plot.py
 
 # Default values for simulation parameters
-MU = 15
-SERVERS = 2
-CUSTOMERS_LEAVE = false
+CAPACITY = 5
 
 # Detect OS for platform-specific commands
 ifeq ($(OS),Windows_NT)
     # Windows commands
     RM = del /Q
     CLASS_FILES = *.class
-    CSV_FILE = coffee_shop_simulation_results.csv
+    CSV_FILE = .\simulation_plots\*.png
 else
     # Unix-like commands
     RM = rm -f
     CLASS_FILES = *.class
-    CSV_FILE = coffee_shop_simulation_results.csv
+    CSV_FILE = ./simulation_plots/*.png
 endif
 
 .PHONY: all clean run sim_with_params result
@@ -46,7 +44,7 @@ run: compile
 # Run simulation with provided parameters
 # Usage: make sim_with_params MU=18 CAPACITY=3 CUSTOMERS_LEAVE=true
 run_in: compile
-	$(JAVA) $(JAVA_CLASS) $(MU) $(SERVERS) $(CUSTOMERS_LEAVE)
+	$(JAVA) $(JAVA_CLASS) $(CAPACITY)
 
 # Run full analysis with Python
 result: compile

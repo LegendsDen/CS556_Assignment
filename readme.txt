@@ -204,7 +204,20 @@ Code Structure
 
 How to Run the Simulation 
 
+Using MakeFile:
 
+make run --> To compile and run the simulation
+make run_in CAPACITY=2 --> To run the simulation with a queue capacity of 2
+make result--> To plot the results using Python
+make clean --> To clean the compiled files
+
+Without MakeFile:
+javac CallCenterSimulation.java
+java CallCenterSimulation
+or 
+java CallCenterSimulation 2
+
+python plot_results.py -> plots results for varying capacity
 
 
 Coffee Shop Queue Simulation (M/M/1 Model)
@@ -320,5 +333,20 @@ Code Structure
 
 
 How to Run the Simulation
+
+Using MakeFile:
+
+make run --> To compile and run the simulation
+make run_in MU=12 SERVERS=2 CUSTOMER_LEAVE=true --> To run the simulation with a queue 2 baristas and a service rate of 12 and customers leaving after 5 mins waiting
+make result--> To tabularise the results using Python
+make clean --> To clean the compiled files
+
+Without MakeFile:
+javac CoffeShopSimulation.java
+java CoffeShopSimulation
+or 
+java CoffeShopSimulation 12 2 true  --> To run the simulation with a queue 2 baristas and a service rate of 12 and customers leaving after 5 mins waiting
+
+python plot_results.py -> get result for varying servers and mu
 
 

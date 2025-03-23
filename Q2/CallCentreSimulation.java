@@ -27,18 +27,22 @@ class Event implements Comparable<Event> {
 
 // generateSimulation gives a random variable based on exponential distribution 
 public class CallCentreSimulation {
+
+    //Generate an exponential random Variable
     public static double generateExponential(double lambda) {
         Random random = new Random();
         double u = random.nextDouble(); // Generates a random number in [0,1)
         return -Math.log(1 - u) / lambda;   
     }
 
+    // Simulation Parameters
     static double lambda = 1/180.0;
     static double mu = 1/150.0;
     static int capacity;
     static double simulationPeriod = 8*60*60*5; 
     static PriorityQueue<Event> eventQueue = new PriorityQueue<>(); // PriorityQueue based on arrival time to stimulate customer waiting in the queue 
 
+    //Measuring Variables
     static double currTime = 0;
     static double lastEventTime = 0;
     static double numInSystem = 0;
@@ -57,7 +61,7 @@ public class CallCentreSimulation {
         capacity = args.length > 0 ? Integer.parseInt(args[0]) : 5;
         eventQueue.add(new Event(generateExponential(lambda), EventType.ARRIVAL));
 
-
+        // Execute tasks in order of time
         while (!eventQueue.isEmpty()) {
             Event event = eventQueue.poll();
             currTime = event.time;
@@ -72,16 +76,19 @@ public class CallCentreSimulation {
             lastEventTime = currTime;
         }
 
-        System.out.println("Average Waiting Time: "+totalWaitingTime/(numCustomersArrived-numCustomersRejected));
-        System.out.println("Average Time in System: "+totalTimeInSystem/(numCustomersArrived-numCustomersRejected));
+        // Printing Metrics
+        System.out.println("Average Waiting Time: "+totalWaitingTime/(numCustomersArrived-numCustomersRejected) + " seconds");
+        System.out.println("Average Time in System: "+totalTimeInSystem/(numCustomersArrived-numCustomersRejected) + " seconds");
         System.out.println("Utilization Rate of Agent: "+(1-(timeQueueEmpty/simulationPeriod)));
         System.out.println("Average Number of Customers in Queue: "+totalWaitingTime/simulationPeriod);
         System.out.println("Probability of System Full: "+timeQueueFull/simulationPeriod);
         System.out.println("Probability of Customers Rejected: "+numCustomersRejected/numCustomersArrived);
 
     }
-
+    // In case of Arrivals
     public static void handleArrival() {
+
+        // Update waiting time and total time of system
         numCustomersArrived++;
         if (numInSystem == 0) {
             timeQueueEmpty += currTime - lastEventTime;
@@ -102,8 +109,11 @@ public class CallCentreSimulation {
         }
         
         numInSystem++;
+        // Schedule Next arrival after exponential time
         eventQueue.add(new Event(currTime + generateExponential(lambda), EventType.ARRIVAL));
+        
         if (numInSystem == 1) {
+            // If system is empty, start service the customer
             eventQueue.add(new Event(currTime + generateExponential(mu), EventType.DEPARTURE));
         }
 
@@ -111,6 +121,7 @@ public class CallCentreSimulation {
 
     public static void handleDeparture() {
         
+        // Updating Wating and total time in system
         totalWaitingTime += (numInSystem-1) * (currTime - lastEventTime);
         
         totalTimeInSystem += numInSystem * (currTime - lastEventTime);
@@ -121,6 +132,7 @@ public class CallCentreSimulation {
         }
         numInSystem--;
         if (numInSystem >0) {
+            // Start Servicing Next Customer
             eventQueue.add(new Event(currTime + generateExponential(mu), EventType.DEPARTURE));
         }
     }
