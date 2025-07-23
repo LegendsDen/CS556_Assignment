@@ -1,351 +1,229 @@
-# CS556_Assignment
-Bank Queue Simulation (M/M/c Model) 
+# 📊 CS556 Queue Simulation Projects
+
+This repository contains simulations for various real-world queuing systems using **event-driven models** based on the **M/M/c**, **M/M/1/c**, and **M/M/1** queuing theories.
+
+---
+
+## 🏦 Bank Queue Simulation (M/M/c Model)
 
-Overview
+### 📋 Overview
+
+Simulates an 8-hour workday in a bank where:
+- Customers arrive following a **Poisson process** (λ = 40/hour).
+- Service time is **exponentially distributed** (μ = 15/hour).
+- Number of tellers **varies over time**.
+
+#### 📆 Teller Allocation:
+| Time Period        | No. of Tellers |
+|--------------------|----------------|
+| 9:00 AM – 11:00 AM | 2              |
+| 11:00 AM – 2:00 PM | 4 _(Peak)_     |
+| 2:00 PM – 5:00 PM  | 3              |
+
+---
+
+### ✅ Features Implemented
+
+- Event-driven simulation of **arrivals** and **departures**.
+- **Dynamic teller allocation** over different time periods.
+- Full **queue management** for customers.
+- Calculation of:
+  - Average waiting time
+  - Average system time
+  - Teller utilization
+  - Average queue length
+  - Probability and duration of all tellers being busy
+- File-based logging of queue and wait time
+- Python-based **visualization support**
+
+---
+
+### 🧱 Code Structure
+
+#### 🧾 Data Structures
+- `Customer`: Stores arrival, start, and departure times.
+- `Teller`: Availability and service tracking.
+- `PeriodMetrics`: Performance metrics per time period.
+
+#### 🧠 Core Components
+- `generateInterarrivalTime()`
+- `generateServiceTime()`
+- `adjustTellers()`
+- `processArrival()`
+- `processAvailableTellers()`
+- `updateTellerMetrics()`
+- `runSimulation()`
+- `displayResults()`
+
+---
+
+### ▶️ How to Run
+
+#### ✅ With Makefile:
+```bash
+make            # Compile
+make run        # Run the simulation
+make plot       # Plot results using Python
+make clean      # Clean files
+
+g++ -o bank_simulation bank_simulation.cpp
+./bank_simulation
+
+python plot_results.py
+```
+---
+
+## 📞 Call Center Queue Simulation (M/M/1/c Model)
+
+### 📋 Overview
+
+Simulates a call center operating with:
+- A **single agent** serving calls.
+- Calls arrive via **Poisson process** (λ = 20/hour).
+- Service times are **exponentially distributed** (μ = 24/hour).
+- A **limited waiting queue** (capacity `c`).
+- **New arrivals are rejected** when the system is full.
+
+---
+
+### ✅ Features Implemented
+
+- Event-driven simulation using a **priority queue**.
+- Queue rejection handling when the system is full.
+- Performance metrics calculation:
+  - Average waiting time
+  - Average time in the system
+  - Agent utilization
+  - Average queue length
+  - Probability of full queue
+  - Call rejection probability
+- Capacity variation (`c = 3` to `7`)
+- Python-based **visualization** support
+- Comparison with **theoretical M/M/1/c formulas**
 
-This project implements a bank queue simulation based on the M/M/c queuing model, where:
+---
 
-    Customers arrive according to a Poisson process (random arrivals).
+### 🧱 Code Structure
 
-    Service times follow an exponential distribution (random service durations).
+#### 🧾 Classes
+- `Event`: Represents customer arrival or departure.
+- `EventType`: Enum with values `ARRIVAL` and `DEPARTURE`.
+- `PriorityQueue<Event>`: Manages simulation events ordered by time.
 
-    Multiple tellers (servers) are available, but their count varies across time periods.
+#### ⚙️ Parameters
+- `lambda = 1/180.0` (20 calls/hour)
+- `mu = 1/150.0` (24 calls/hour)
+- `capacity = 5` (default, configurable)
+- `simulationPeriod = 5 days × 8 hours/day`
 
-The simulation runs for an 8-hour workday (9:00 AM - 5:00 PM) and evaluates key performance metrics, including average waiting time, queue length, and teller utilization.
-Problem Statement
+#### 🧠 Core Functions
+- `generateExponential()`: Generates exponential random variable.
+- `handleArrival()`: Processes arrivals, queues or rejects if full.
+- `handleDeparture()`: Frees up the agent.
+- `runSimulation()`: Main simulation loop.
+- `displayResults()`: Computes and prints all metrics.
 
-A bank operates with a variable number of tellers throughout the day to handle customer transactions. The parameters are:
+---
 
-    Arrival rate: 40 customers per hour (Poisson distributed).
+### ▶️ How to Run
 
-    Service rate: Each teller serves customers at an average of 4 minutes per customer (exponentially distributed).
+#### ✅ With Makefile
+```bash
+make run                     # Compile and run simulation
+make run_in CAPACITY=2       # Run with custom queue capacity
+make result                  # Plot the results using Python
+make clean                   # Remove compiled files
 
-    Teller allocation:
-
-        2 tellers from 9:00 AM to 11:00 AM
-
-        4 tellers from 11:00 AM to 2:00 PM (Peak Hours)
-
-        3 tellers from 2:00 PM to 5:00 PM
-
-The simulation must track and compute performance metrics for different time periods and the entire day.
-Features Implemented
-
-✅ Event-driven simulation of customer arrivals and service completion.
-✅ Variable number of tellers adapting to time periods.
-✅ Queue management for customers when all tellers are busy.
-✅ Performance metrics calculation, including:
-
-    Average waiting time in the queue.
-
-    Average time spent in the system (waiting + service time).
-
-    Teller utilization rate (percentage of time busy).
-
-    Average number of customers in the queue.
-
-    Probability of all tellers being busy.
-
-    Total time duration when all tellers were continuously busy.
-    ✅ File-based logging for queue length and waiting time tracking.
-    ✅ Python visualization support for queue length and waiting times.
-
-Code Structure
-1. Data Structures
-
-    Customer – Stores customer arrival time, service start time, departure time.
-
-    Teller – Represents a bank teller with availability status.
-
-    PeriodMetrics – Stores performance data for each time period.
-
-2. Simulation Components
-
-    generateInterarrivalTime() – Generates random interarrival times using an exponential distribution.
-
-    generateServiceTime() – Generates random service times using an exponential distribution.
-
-    adjustTellers() – Dynamically adjusts the number of tellers based on the current time period.
-
-    processArrival() – Handles new customer arrivals.
-
-    processAvailableTellers() – Assigns waiting customers to free tellers.
-
-    updateTellerMetrics() – Updates busy, idle, and all-busy time durations.
-
-    runSimulation() – The main event-driven loop that processes arrivals, departures, and teller updates.
-
-    displayResults() – Computes and prints the final statistics.
-
-How to Run the Simulation
-    1. Compile and Run (C++)
-                 g++ -o bank_simulation bank_simulation.cpp 
-                ./bank_simulation
-
-    2.To plot results (Python) -- place the generated "queue_data.txt" and "waiting_time.txt" in same directory
-                python plot_results.py
-
-    Or   using Makefile
-    1. To Compile  -->make 
-    2. To run  and stimulate --> make run 
-    3. TO see plots --> make plot
-    4. To clean  --> make clean 
-
-
-
-
-
-
-
-
-Call Center Queue Simulation (M/M/1/c Model)
-
-Overview
-
-This project implements a call center simulation based on the M/M/1/c queuing model, where:
-
-    Customers (calls) arrive following a Poisson distribution.
-
-    Service times are exponentially distributed.
-
-    A single agent handles calls, and there is a limited waiting queue (capacity c).
-
-    If the system is full (agent + queue), new arrivals are rejected.
-
-The simulation runs for 5 days, 8 hours per day and evaluates key performance metrics, including average waiting time, agent utilization, and call rejection probability.
-Problem Statement
-
-A call center operates with a single agent and a limited waiting capacity.
-The simulation must model the M/M/1/c queue using these parameters:
-
-    Arrival rate (λ): 20 calls per hour (Poisson distributed)
-
-    Service rate (μ): 24 calls per hour (Exponential distribution)
-
-    System capacity (c): 5 (including the customer being served)
-
-Goals
-
-    Simulate the call center over a workweek (5 days, 8 hours/day).
-
-    Compute key performance metrics:
-
-        Average waiting time per customer.
-
-        Average time spent in the system (waiting + service).
-
-        Agent utilization rate.
-
-        Average number of customers in the queue.
-
-        Probability of system being full (queue capacity reached).
-
-        Probability of customer rejection (customer arrival when queue is full).
-
-    Vary the system capacity (3 to 7) to analyze its impact.
-
-    Visualize trends of waiting time, utilization, and rejection probability.
-
-    Determine the optimal system capacity for balancing waiting time and rejection rate.
-
-    Compare simulation results with analytical solutions for M/M/1/c queues.
-
-Features Implemented
-
-✅ Event-driven simulation using a priority queue for arrivals and departures.
-✅ Limited queue capacity (customers are rejected if full).
-✅ Performance metrics calculation, including:
-
-    Average waiting time in the queue.
-
-    Average time in the system (waiting + service time).
-
-    Utilization rate of the agent.
-
-    Average queue length.
-
-    Probability of system full (queue at max capacity).
-
-    Customer rejection probability.
-    ✅ Capacity variation from 3 to 7 to analyze system performance.
-    ✅ Python visualization support for queue behavior and rejection rates.
-    ✅ Comparison with theoretical M/M/1/c formulas.
-
-Code Structure
-1. Classes & Data Structures
-
-    Event – Represents a customer arrival or departure event, ordered by time.
-
-    EventType – Enum for ARRIVAL and DEPARTURE events.
-
-    PriorityQueue<Event> – Manages simulation events sorted by time.
-
-2. Simulation Parameters
-
-    lambda (arrival rate) = 1/180.0 (20 calls/hour).
-
-    mu (service rate) = 1/150.0 (24 calls/hour).
-
-    capacity (queue size) = 5 (default), can be varied from 3 to 7.
-
-    simulationPeriod = 5 days × 8 hours/day.
-
-3. Core Functions
-
-    generateExponential(lambda) – Generates a random exponential arrival/service time.
-
-    handleArrival() – Processes customer arrivals, queues them if space is available, or rejects them.
-
-    handleDeparture() – Processes customer departures, freeing up the system.
-
-    runSimulation() – Runs the event-driven simulation for a full workweek.
-
-    displayResults() – Computes and prints performance metrics.
-
-
-How to Run the Simulation 
-
-Using MakeFile:
-
-make run --> To compile and run the simulation
-make run_in CAPACITY=2 --> To run the simulation with a queue capacity of 2
-make result--> To plot the results using Python
-make clean --> To clean the compiled files
-
-Without MakeFile:
 javac CallCenterSimulation.java
 java CallCenterSimulation
-or 
+# or with capacity
 java CallCenterSimulation 2
 
-python plot_results.py -> plots results for varying capacity
+python plot_results.py
 
+```
+---
+## ☕ Coffee Shop Queue Simulation (M/M/1 with Reneging)
 
-Coffee Shop Queue Simulation (M/M/1 Model)
+### 📋 Overview
 
-Overview
+Simulates a coffee shop where:
+- One **barista** serves customers in **First-Come, First-Served (FCFS)** order.
+- Customers arrive via **Poisson process** (λ = 10/hour).
+- Service times are **exponentially distributed** (μ = 15/hour).
+- **Reneging**: Customers leave if waiting time exceeds **5 minutes**.
+- Simulation ends after **500 customers** are served.
 
-This project simulates a small coffee shop with one barista serving customers in a First-Come, First-Served (FCFS) queue. Customers arrive randomly based on a Poisson process, and the barista serves them at an exponentially distributed rate.
-The simulation runs until 500 customers have been served, and key performance metrics are calculated.
-Problem Statement
+---
 
-A coffee shop operates with one barista and follows an M/M/1 queue model:
+### ✅ Features Implemented
 
-    Customers arrive at an average rate of λ = 10 customers per hour (Poisson distribution).
+- Event-driven simulation using **priority queue**.
+- First-Come, First-Served **queue model**.
+- Handles customer abandonment (**reneging**).
+- Performance metrics:
+  - Average waiting time and total time in system
+  - Barista utilization and idle time
+  - Maximum queue length
+  - Probability of customer abandonment
+  - **Revenue loss** due to long wait times
+- Support for:
+  - Varying **service rate**
+  - Adding a **second barista** (M/M/c)
+  - **Peak hour detection** based on max queue
+- Python-based **visualizations**
 
-    Service time follows an exponential distribution with μ = 15 customers per hour.
+---
 
-    Customers must wait in line if the barista is busy.
+### 🧱 Code Structure
 
-    If the waiting time exceeds a certain threshold (5 minutes), some customers leave (reneging).
+#### 🧾 Classes
+- `Event`: Represents arrival, departure, or abandonment.
+- `EventType`: Enum for `ARRIVAL`, `DEPARTURE`, `CUSTOMER_LEAVING`.
+- `PriorityQueue<Event>`: Manages simulation events by time.
+- `Queue<Integer>`: Represents the customer queue (LinkedList).
 
-    The coffee shop operates until 500 customers have been processed.
+#### ⚙️ Parameters
+- `lambda = 1/6.0` (10 customers/hour)
+- `mu = 1/4.0` (15 customers/hour)
+- `maxWaitingTime = 5 minutes`
+- `lossDueToLeaving = $5`
+- `simulationCapacity = 500`
 
-Goals
+#### 🧠 Core Functions
+- `generateExponential()`: Random interarrival/service time.
+- `handleArrival(int id)`: Handles new customer arrivals.
+- `handleDeparture(int id)`: Handles customer departures.
+- `handleCustomerLeaving(int id)`: Handles abandonment.
+- `removeCustomer(int id)`: Cleans queue & events.
+- `runSimulation()`: Main simulation loop.
+- `displayResults()`: Computes and prints metrics.
 
-    Simulate the coffee shop for 500 customers.
+---
 
-    Compute key performance metrics:
+### ▶️ How to Run
 
-        Average waiting time before ordering.
+#### ✅ With Makefile
+```bash
+make run                                # Default simulation
+make run_in MU=12 SERVERS=2 CUSTOMER_LEAVE=true  # Custom: slower barista + 2 servers + reneging
+make result                             # Plot results using Python
+make clean                              # Clean compiled files
 
-        Average time spent in the shop (waiting + service time).
-
-        Utilization factor of the barista.
-
-        Idle time of the barista.
-
-        Maximum queue length.
-
-        Probability of an empty queue.
-
-        Customer abandonment probability.
-
-        Revenue loss due to long wait times.
-
-    Analyze system behavior during peak hours.
-
-    Experiment with different service rates (faster/slower barista).
-
-    Simulate hiring a second barista and compare results.
-
-    Determine revenue impact when customers leave due to long wait times.
-
-Features Implemented
-
-✅ Event-driven simulation using a priority queue for arrivals and departures.
-✅ First-Come, First-Served (FCFS) queue management.
-✅ Support for customer abandonment (reneging) when waiting time exceeds 5 minutes.
-✅ Performance metrics calculation, including:
-
-    Average waiting time before ordering.
-
-    Total time spent in the coffee shop.
-
-    Utilization of the barista.
-
-    Barista idle time.
-
-    Probability of an empty queue.
-
-    Customer loss and revenue impact due to long waits.
-    ✅ Dynamic parameter configuration (e.g., change service rate, add a second barista).
-    ✅ Peak hour detection (time of max queue length).
-    ✅ Multiple barista simulation (M/M/c model).
-
-Code Structure
-1. Classes & Data Structures
-
-    Event – Represents a customer arrival, departure, or abandonment event.
-
-    EventType – Enum for ARRIVAL, DEPARTURE, CUSTOMER_LEAVING.
-
-    PriorityQueue<Event> – Manages simulation events sorted by time.
-
-    Queue<Integer> (LinkedList) – Represents the customer queue.
-
-2. Simulation Parameters
-
-    lambda (arrival rate) = 10 customers/hour = 1 customer every 6 minutes.
-
-    mu (service rate) = 15 customers/hour = 1 customer every 4 minutes.
-
-    simulationCapacity = 500 customers.
-
-    maxWaitingTime = 5 minutes (customer leaves if exceeded).
-
-    lossDuetoLeaving = $5 per abandoned customer.
-
-3. Core Functions
-
-    generateExponential(lambda) – Generates a random exponential arrival/service time.
-
-    handleArrival(int customerID) – Processes customer arrivals, queues them if necessary.
-
-    handleDeparture(int customerID) – Processes customer departures, freeing up the barista.
-
-    handleCustomerLeaving(int customerID) – Handles customers who abandon the queue after 5 minutes.
-
-    removeCustomer(int customerID) – Cleans up abandoned customers from queue & event list.
-
-    runSimulation() – Runs the event-driven simulation until 500 customers are processed.
-
-    displayResults() – Computes and prints performance metrics.
-
-
-How to Run the Simulation
-
-Using MakeFile:
-
-make run --> To compile and run the simulation
-make run_in MU=12 SERVERS=2 CUSTOMER_LEAVE=true --> To run the simulation with a queue 2 baristas and a service rate of 12 and customers leaving after 5 mins waiting
-make result--> To tabularise the results using Python
-make clean --> To clean the compiled files
-
-Without MakeFile:
 javac CoffeShopSimulation.java
-java CoffeShopSimulation
-or 
-java CoffeShopSimulation 12 2 true  --> To run the simulation with a queue 2 baristas and a service rate of 12 and customers leaving after 5 mins waiting
+java CoffeShopSimulation                   # Default
+java CoffeShopSimulation 12 2 true         # With custom parameters
 
-python plot_results.py -> get result for varying servers and mu
+python plot_results.py                     # Visualize results
+
+```
+---
+
+## 👨‍💻 Authors
+
+- **Sushant Kumar**  
+- **Tanmay Mittal**  
+
+**Course**: CS348 – Performance Modelling of Communication and Computer Systems  
+**Institution**: Indian Institute of Technology Guwahati  
+**Year**: 2025
